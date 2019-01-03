@@ -1,0 +1,26 @@
+peppers.bmp
+peppersencrypted.bmp
+secret_key.txt
+peppersdecrypted.bmp
+test.bmp
+detections.bmp
+cifra0.bmp
+cifra1.bmp
+cifra2.bmp
+cifra3.bmp
+cifra4.bmp
+cifra5.bmp
+cifra6.bmp
+cifra7.bmp
+cifra8.bmp
+cifra9.bmp
+255 0 0
+255 255 0
+0 255 0
+0 255 255
+255 0 255
+0 0 255
+192 192 192
+255 140 0
+128 0 128
+128 0 0
