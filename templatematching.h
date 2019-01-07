@@ -16,7 +16,7 @@ bmpimage grayscaleimage(bmpimage image)
 
     for(i = 0; i < image.img_height; i++)  {
         for(j = 0; j < image.img_width; j++)  {
-
+            //For every pixel, we transform its every nuance into the same number(aux)
             cursor = cursorpos(i, j, image.img_height, image.img_width);
             aux = 0.299 * image.pixel[cursor+2] + 0.587 * image.pixel[cursor+1] + 0.114*image.pixel[cursor];
 
@@ -26,30 +26,30 @@ bmpimage grayscaleimage(bmpimage image)
     }
     return image;
 }
-//-------------------------Task 7---------------------------
 vector template_matching(bmpimage ibmp, bmpimage sab, double prag,unsigned int digit)
 {
+    //Grayscaling both the image and the pattern in order to get best results
     ibmp = grayscaleimage(ibmp);
     sab = grayscaleimage(sab);
 
     unsigned int i, j, i1, j1;
     double sablon_average = 0;
     double sablon_deviation = 0;
-
+    //Initialising the array of pattern answers
     vector arr = vectorinitialise();
-
+    //Calculation the average of the pattern
     for (i = 0 ; i< 15; i++)
         for (j = 0; j< 11 ; j++)
             sablon_average += sab.pixel[cursorpos(i, j,15,11)];
     sablon_average /= PIX_NUMBER;
-
+    //Calculation of the average deviation of the pattern
     for (i = 0 ; i< 15; i++)
         for (j = 0; j< 11 ; j++)
             sablon_deviation += (sab.pixel[cursorpos(i, j,15, 11)] - sablon_average) * (sab.pixel[cursorpos(i,j,15, 11)] - sablon_average);
-
+    //Splitting the deviation to (number of pixels - 1) and then extracting root
     sablon_deviation /= (PIX_NUMBER-1);
     sablon_deviation  = sqrt((double)sablon_deviation);
-
+    //For every indexes at line and column of the big matrix, calculating the results with the pattern
     for (i = 0; i + 14 < ibmp.img_height ; i++)
         for (j = 0 ; j + 10 < ibmp.img_width ; j++) {
             double corr = 0;
@@ -58,27 +58,30 @@ vector template_matching(bmpimage ibmp, bmpimage sab, double prag,unsigned int d
 
             for (i1 = 0; i1 <= 14; i1++)
                 for (j1 = 0; j1 <= 10 ; j1++)
-
+            //Calculating the average of the certain pattern place in the big matrix
             faverage += ibmp.pixel[cursorpos(i + i1, j + j1,
                                              ibmp.img_height, ibmp.img_width)];
-
+            //Splitting by the number of pixels in a pattern
             faverage /= PIX_NUMBER;
-
+            //Calculating the deviation
             for (i1 = 0; i1 <= 14; i1++)
                 for (j1 = 0; j1 <= 10 ; j1++)
                     devf += (ibmp.pixel[cursorpos(i + i1, j + j1 , ibmp.img_height, ibmp.img_width)] - faverage) *
                             (ibmp.pixel[cursorpos(i + i1, j + j1 , ibmp.img_height, ibmp.img_width)] - faverage);
-
+            //Making the same to the deviation of the small matrix in the image
             devf /= (PIX_NUMBER-1);
             devf =  sqrt ((double)devf);
-
+            //Calculating the correlation
             for (i1 = 0; i1 <= 14; i1++)
                 for (j1 = 0; j1 <= 10 ; j1++) {
                     corr += (ibmp.pixel[cursorpos(i + i1, j + j1 , ibmp.img_height, ibmp.img_width)] - faverage) / devf*
                             (sab.pixel[cursorpos(i1, j1, 15, 11)] - sablon_average) / sablon_deviation ;
 
                 }
+            //Splitting the total correlation by the number of pixels
             corr /= PIX_NUMBER;
+            //If the found correlation is bigger than the given PRAG = 0.5, then it becomes an answer
+            //For this pattern
             if (corr >= prag)
                 push_back(&arr, i, j, corr, digit);
         }
@@ -88,7 +91,10 @@ vector template_matching(bmpimage ibmp, bmpimage sab, double prag,unsigned int d
 //-------------------------------------Task 8------------------
 void contouring(bmpimage *image, unsigned int x, unsigned int y, const unsigned char *rgb) {
 
+    //Contouring in an image(given by a pointer) the rectangle starting from
+    //indexes (x,y) at the matrix, going in height 15 downward and width 11 rightward
     int i, j;
+    //Contouring all lines, if available within the matrix
     for (i = 0; i <= 14 && x + i < image->img_height; i++) {
         if (y - 1 >= 0) {
             image->pixel[cursorpos(x + i, y - 1, image->img_height, image->img_width)] = rgb[2];
@@ -101,6 +107,7 @@ void contouring(bmpimage *image, unsigned int x, unsigned int y, const unsigned 
             image->pixel[cursorpos(x + i, y + 11, image->img_height, image->img_width)+2] = rgb[0];
         }
     }
+    //Contouring all columns, if available within the matrix
     for (j = 0; j <= 10 && y + j < image->img_width; j++) {
         if (x - 1 >= 0) {
             image->pixel[cursorpos(x - 1, y + j, image->img_height, image->img_width)] = rgb[2];
@@ -115,7 +122,7 @@ void contouring(bmpimage *image, unsigned int x, unsigned int y, const unsigned 
     }
 }
 //--------------------Task 9-------------------
-
+//Compare function for the qsort, comparing by correlation
 int compare(const void *a,const void *b)
 {
     corr_elem * p = (corr_elem *) a;
@@ -124,7 +131,7 @@ int compare(const void *a,const void *b)
 }
 void sortingthematches(vector *arr) {
 
-    //Quicksorting
+    //Quicksorting the first arr->size elements, of the given size, with the function compare
     qsort(arr->elem, arr->size, sizeof(corr_elem), compare);
 }
 //----------------Task 10-------------

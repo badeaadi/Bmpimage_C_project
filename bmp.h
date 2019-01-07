@@ -73,7 +73,7 @@ bmpimage matrix_linearisation(char *filename) {
 
     //Transforms the input data in internal storage
     bmpimage newimage = createbmp(header_curr, img_size, img_width, img_height) ;
-
+    //Allocating 3 * height * width pixels
     newimage.pixel = malloc(3* img_height * img_width * sizeof(unsigned char));
 
     int cursor=0;
@@ -93,6 +93,7 @@ bmpimage matrix_linearisation(char *filename) {
     fclose(fin);
     return newimage;
 }
+//---------------------------Task 3--------------
 //Saving the linearisation of a bmp image to a certain file
 void save_linearisation(bmpimage img, char *filename)
 {
@@ -104,11 +105,15 @@ void save_linearisation(bmpimage img, char *filename)
         fwrite(&img.h.header_info[i], 1, 1, fout);
     unsigned char pixrgb[3];
     unsigned char null_char = 0;
+
+    //The padding is equal to the quantity of bytes needed at the end of each line in order to make it
+    //divisible by 4
     int padding = (3 * img.img_width) % 4;
     if (padding)
         padding = 4 - padding;
 
     int j, cursor = 0;
+    //Writing the image, pixel by pixel;
     for (i = img.img_height - 1; i >=0 ; i--) {
         for (j = 0; j < img.img_width; ++j) {
             cursor = cursorpos((unsigned int) i, (unsigned int) j, img.img_height, img.img_width);
@@ -116,6 +121,8 @@ void save_linearisation(bmpimage img, char *filename)
             pixrgb[0] = img.pixel[cursor++]; //B
             pixrgb[1] = img.pixel[cursor++]; //G
             pixrgb[2] = img.pixel[cursor++]; //R
+            //Writing the pixels with the fwrite, function which takes as parameters the address,
+            //the number of pixels and the cursor
             fwrite(&pixrgb, 3, 1, fout);
         }
         int j = padding;
@@ -124,5 +131,6 @@ void save_linearisation(bmpimage img, char *filename)
             j--;
         }
     }
+    //Closing the locations file
     fclose(fout);
 }

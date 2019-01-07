@@ -36,7 +36,9 @@ int main()  {
     decrypt_image(encryptedimage_location, decryptedimage_location, secretfile_location);
 
     //Applying the chi function to both the first image and its encryption
+    printf("Chi-squared test on RGB channels for peppers.bmp:\n");
     chi_function(image_location);
+    printf("Chi-squared test on RGB channels for peppersecnrypted.bmp:\n");
     chi_function(encryptedimage_location);
     //First phase of the project DONE
 
@@ -67,7 +69,6 @@ int main()  {
         vector matches_aux;
         matches_aux = template_matching(image, sablon, 0.5, (unsigned int) i);
 
-        printf("CIFRA %d\n", i);
         for (j = 0; j< matches_aux.size; j++) {
             push_back(&matches, matches_aux.elem[j].px, matches_aux.elem[j].py,
                       matches_aux.elem[j].correlation, matches_aux.elem[j].digit);
@@ -76,9 +77,11 @@ int main()  {
     }
     //Sorting the array of matches(contained as a dinamically sized array)
     sortingthematches(&matches);
-
+    /*
+     * Correlation verification (in console)
     for (i = 0 ; i < matches.size; i++)
-        printf("%lf\n", matches.elem[i].correlation);
+        printf("%lf\n", matches.elem[i].correlation);*/
+
     //Eliminating the overlapped matches from the foudn array, using the 0.2 overlap index
     vector sols = nonmax_elimination(matches);
 
@@ -92,11 +95,11 @@ int main()  {
         contouring(&detections, sols.elem[j].px, sols.elem[j].py, rgb[sols.elem[j].digit]);
     //Saving the detections to the certain detection location
     save_linearisation(detections, detection_location);
-    //Freeing the used memory
+    //Freeing the used memory, the solutions of the nonmax
     free(sols.elem);
     free(image.pixel);
     free(detections.pixel);
-
+    //Freeing the allocated strings for locations
     free(image_location);
     free(encryptedimage_location);
     free(decryptedimage_location);
@@ -104,7 +107,7 @@ int main()  {
     free(detection_location);
     free(test_location);
     free(cifra);
-
+    //Closing the locations.txt file
     fclose(locations);
     return 0;
 }
