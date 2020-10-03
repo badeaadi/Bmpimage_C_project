@@ -1,9 +1,10 @@
 # Bmpimage---Project
-First year university project, written using the C language standard.  
 
-Using encryption and decryption techniques, the code is meant to create an uniquely enchiphered image and also make use of this one to get to the first one back. 
+First year university project, written using the C language standard. 
 
-The second part of the project, the template matching functions succeeds in finding with high accuraccy hand-written letters on a page, without machine learning 
+Using encryption and decryption techniques, the code is meant to create an uniquely enchiphered image and also make use of this one to get to the first one back.
+
+The second part of the project, the template matching functions succeeds in finding with high accuraccy hand-written letters on a page. 
 
 ## Steps
 ```
